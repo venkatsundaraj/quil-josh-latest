@@ -1,88 +1,88 @@
-"use client";
+"use client"
 
-import { FC, useState } from "react";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import Dropzone from "react-dropzone";
-import { Icons } from "./icons";
-import { Progress } from "./ui/progress";
-import { cn } from "@/lib/utils";
-import { uploadFiles, useUploadThing } from "@/lib/uploadthing";
-import { useToast } from "@/components/ui/use-toast";
-import { trpc } from "@/app/_trpc/client";
-import { useRouter } from "next/navigation";
-import { imageValidation } from "@/lib/validations/file";
-import UploadButtonDuplicate from "./upload-button-duplicate";
+import { FC, useState } from "react"
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import Dropzone from "react-dropzone"
+import { Icons } from "./icons"
+import { Progress } from "./ui/progress"
+import { cn } from "@/lib/utils"
+import { uploadFiles, useUploadThing } from "@/lib/uploadthing"
+import { useToast } from "@/components/ui/use-toast"
+import { trpc } from "@/app/_trpc/client"
+import { useRouter } from "next/navigation"
+import { imageValidation } from "@/lib/validations/file"
+import UploadButtonDuplicate from "./upload-button-duplicate"
 interface UploadButtonProps {}
 
 const UploadDropzone = function () {
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [progressBarValue, setProgressBarValue] = useState<number>(0);
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const [progressBarValue, setProgressBarValue] = useState<number>(0)
 
-  const { startUpload } = useUploadThing("pdfUploader");
-  const { toast } = useToast();
-  const router = useRouter();
+  const { startUpload } = useUploadThing("pdfUploader")
+  const { toast } = useToast()
+  const router = useRouter()
   const { mutate: startPolling } = trpc.getFile.useMutation({
     onSuccess: (file) => {
-      router.push(`/dashboard/${file.id}`);
+      router.push(`/dashboard/${file.id}`)
     },
     retry: true,
     retryDelay: 500,
-  });
+  })
 
   const generateProgressBar = function () {
     const interval = setInterval(() => {
       setProgressBarValue((prev) => {
         if (progressBarValue >= 95) {
-          clearInterval(interval);
-          return progressBarValue;
+          clearInterval(interval)
+          return progressBarValue
         }
-        return prev + 5;
-      });
-    }, 500);
+        return prev + 5
+      })
+    }, 500)
 
-    return interval;
-  };
+    return interval
+  }
   return (
     <Dropzone
       multiple={false}
       onDrop={async (file) => {
-        const validateImage = imageValidation.safeParse({ file });
+        const validateImage = imageValidation.safeParse({ file })
 
         if (!validateImage.success) {
           return toast({
             title: "File Uploding Failes in frontend",
             variant: "destructive",
             description: "Something Went Wrong",
-          });
+          })
         }
-        setIsUploading(true);
-        const progressInterval = generateProgressBar();
-        console.log(file);
-        const res = await startUpload(file);
+        setIsUploading(true)
+        const progressInterval = generateProgressBar()
+
+        const res = await startUpload(file)
 
         if (!res) {
           return toast({
             title: "File Uploding Failes",
             variant: "destructive",
             description: "Something Went Wrong",
-          });
+          })
         }
 
-        const [fileResponse] = res;
-        const key = fileResponse.key;
+        const [fileResponse] = res
+        const key = fileResponse.key
 
         if (!key) {
           return toast({
             title: "File Uploding Failes",
             variant: "destructive",
             description: "Something Went Wrong",
-          });
+          })
         }
 
-        clearInterval(progressInterval);
-        setProgressBarValue(100);
-        startPolling({ key });
+        clearInterval(progressInterval)
+        setProgressBarValue(100)
+        startPolling({ key })
       }}
     >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
@@ -143,8 +143,8 @@ const UploadDropzone = function () {
         </div>
       )}
     </Dropzone>
-  );
-};
+  )
+}
 
 const UploadButton: FC<UploadButtonProps> = ({}) => {
   return (
@@ -159,7 +159,7 @@ const UploadButton: FC<UploadButtonProps> = ({}) => {
       </Dialog>
       {/* <UploadButtonDuplicate /> */}
     </>
-  );
-};
+  )
+}
 
-export default UploadButton;
+export default UploadButton

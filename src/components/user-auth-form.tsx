@@ -1,50 +1,66 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useSearchParams } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import * as React from "react"
+import { useSearchParams } from "next/navigation"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { signIn } from "next-auth/react"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 
-import { cn } from "@/lib/utils";
-import { userAuthSchema } from "@/lib/validations/auth";
-import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Icons } from "@/components/icons";
-import { AxiosError } from "axios";
+import { cn } from "@/lib/utils"
+import { userAuthSchema } from "@/lib/validations/auth"
+import { buttonVariants } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Icons } from "@/components/icons"
+import { AxiosError } from "axios"
+import { useToast } from "./ui/use-toast"
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-type FormData = z.infer<typeof userAuthSchema>;
+type FormData = z.infer<typeof userAuthSchema>
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
+  const { toast } = useToast()
   const {
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(userAuthSchema),
-  });
+  })
 
   async function onSubmit(data: FormData) {
     try {
-      const user = await signIn("email", {
+      const res = await signIn("email", {
         email: data.email.toLowerCase(),
         redirect: false,
         callbackUrl: searchParams.get("from") || "/dashboard",
-      });
-      console.log(user);
+      })
+      if (!res?.ok) {
+        return toast({
+          title: "Something went wrong",
+          description: "Your sign in request failed. Please try again.",
+          variant: "destructive",
+        })
+      }
+
+      toast({
+        title: "Please check your mail",
+        description:
+          "We sent you a login link. Be sure to check your spam too.",
+      })
+      return reset()
     } catch (err) {
       if (err instanceof AxiosError) {
-        return setError("root", { message: err.message });
+        return setError("root", { message: err.message })
       }
       if (err instanceof z.ZodError) {
-        return setError("root", { message: err.message });
+        return setError("root", { message: err.message })
       }
-      return setError("root", { message: "Something went wrong" });
+      return setError("root", { message: "Something went wrong" })
     }
   }
 
@@ -83,5 +99,5 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </div>
       </form>
     </div>
-  );
+  )
 }

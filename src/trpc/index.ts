@@ -1,52 +1,52 @@
-import { string, z } from "zod";
-import { privateProcedure, publicProcedure, router } from "./trpc";
-import { db } from "@/lib/db";
-import { TRPCError } from "@trpc/server";
+import { string, z } from "zod"
+import { privateProcedure, publicProcedure, router } from "./trpc"
+import { db } from "@/lib/db"
+import { TRPCError } from "@trpc/server"
 export const appRouter = router({
   sayHello: publicProcedure.query(() => {
-    return { name: "person" };
+    return { name: "person" }
   }),
   getUserFiles: privateProcedure.query(async ({ ctx }) => {
-    const { userId } = ctx;
+    const { userId } = ctx
 
     const files = await db.file.findMany({
       where: {
         userId: userId,
       },
-    });
+    })
 
-    return files;
+    return files
   }),
   deleteFile: privateProcedure
     .input(z.object({ id: string() }))
     .mutation(async ({ ctx, input }) => {
-      const { userId } = ctx;
+      const { userId } = ctx
 
       const file = await db.file.findFirst({
         where: {
           id: input.id,
           userId,
         },
-      });
+      })
 
       if (!file) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: "NOT_FOUND" })
       }
 
       await db.file.delete({
         where: {
           id: input.id,
         },
-      });
+      })
 
-      return { status: "ok" };
+      return { status: "ok" }
     }),
   getFile: privateProcedure
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { userId, user } = ctx;
+      const { userId, user } = ctx
       if (!input.key) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: "NOT_FOUND" })
       }
 
       const file = await db.file.findFirst({
@@ -54,32 +54,46 @@ export const appRouter = router({
           key: input.key,
           userId,
         },
-      });
+      })
 
       if (!file) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: "NOT_FOUND" })
       }
 
-      return file;
+      return file
+    }),
+  getFileUploadStatus: privateProcedure
+    .input(z.object({ fileId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const file = await db.file.findFirst({
+        where: {
+          id: input.fileId,
+          userId: ctx.userId,
+        },
+      })
+
+      if (!file) return { status: "PENDING" as const }
+
+      return { status: file.uploadStatus }
     }),
   getImageFile: privateProcedure
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { user, userId } = ctx;
+      const { user, userId } = ctx
       const file = await db.file.findFirst({
         where: {
           key: input.key,
           userId,
         },
-      });
+      })
 
       if (!file) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: "NOT_FOUND" })
       }
 
-      return file;
+      return file
     }),
-});
+})
 // Export type router type signature,
 // NOT the router itself.
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter

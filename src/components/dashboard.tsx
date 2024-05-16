@@ -1,37 +1,37 @@
-"use client";
-import { FC, useState } from "react";
-import UploadButton from "./upload-button";
-import { trpc } from "@/app/_trpc/client";
-import Skeleton from "react-loading-skeleton";
-import { Icons } from "./icons";
-import { format } from "date-fns";
-import { File } from "@prisma/client";
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+"use client"
+import { FC, useState } from "react"
+import UploadButton from "./upload-button"
+import { trpc } from "@/app/_trpc/client"
+import Skeleton from "react-loading-skeleton"
+import { Icons } from "./icons"
+import { format } from "date-fns"
+import { File } from "@prisma/client"
+import Link from "next/link"
+import { Button } from "./ui/button"
+import { useRouter } from "next/navigation"
 
 interface DashboardProps {}
 
 const Dashboard: FC<DashboardProps> = ({}) => {
   const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
     string | null
-  >(null);
-  const utils = trpc.useContext();
-  const { data: files, isLoading } = trpc.getUserFiles.useQuery();
+  >(null)
+  const utils = trpc.useContext()
+  const { data: files, isLoading } = trpc.getUserFiles.useQuery()
   const { mutate: deleteFile } = trpc.deleteFile.useMutation({
     onSuccess: () => {
-      utils.getUserFiles.invalidate();
+      utils.getUserFiles.invalidate()
     },
     onMutate: ({ id }) => {
-      setCurrentlyDeletingFile(id);
+      setCurrentlyDeletingFile(id)
     },
     onSettled: () => {
-      setCurrentlyDeletingFile(null);
+      setCurrentlyDeletingFile(null)
     },
-  });
+  })
 
   return (
-    <section className="container grid place-items-center gap-6">
+    <section className="container grid place-items-center gap-6 mt-16">
       <h1 className="text-foreground text-4xl ">Upload Files</h1>
       <UploadButton />
       {files && files.length !== 0 ? (
@@ -71,7 +71,7 @@ const Dashboard: FC<DashboardProps> = ({}) => {
 
                   <Button
                     onClick={() => {
-                      deleteFile({ id: item.id });
+                      deleteFile({ id: item.id })
                     }}
                     size="sm"
                     className="w-full"
@@ -92,17 +92,17 @@ const Dashboard: FC<DashboardProps> = ({}) => {
           <Skeleton
             count={1}
             width={340}
-            className="bg-muted min-h-[132px] w-full"
+            className="bg- min-h-[132px] w-full"
           />
           <Skeleton
             count={1}
             width={340}
-            className="bg-muted min-h-[132px] w-full"
+            className="bg- min-h-[132px] w-full"
           />
           <Skeleton
             count={1}
             width={340}
-            className="bg-muted min-h-[132px] w-full"
+            className="bg- min-h-[132px] w-full"
           />
         </ul>
       ) : (
@@ -114,7 +114,7 @@ const Dashboard: FC<DashboardProps> = ({}) => {
         </div>
       )}
     </section>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

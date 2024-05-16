@@ -1,11 +1,16 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
-import { Icons } from "./icons";
-import { ModeToggle } from "./mod-toggle";
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
+import { buttonVariants } from "./ui/button"
+import { cn } from "@/lib/utils"
+import { Icons } from "./icons"
+import { ModeToggle } from "./mod-toggle"
+import { getCurrentUser } from "@/lib/session"
+import UserAccountNav from "./user-account-nav"
 
-const Navbar = () => {
+interface NavbarProps {}
+const Navbar = async ({}: NavbarProps) => {
+  const user = await getCurrentUser()
+
   return (
     <nav className="absolute h-16 inset-x-0 top-0 z-30 w-screen border-b border-border bg-background backdrop-blur-lg transition-all">
       <div className="container h-full">
@@ -22,17 +27,21 @@ const Navbar = () => {
 
           <div className="items-center space-x-4 sm:flex font-paragraph gap-6">
             <ModeToggle />
-            <Link
-              href="/login"
-              className={cn(buttonVariants({ variant: "ghost" }))}
-            >
-              Login
-            </Link>
+            {!user ? (
+              <Link
+                href="/login"
+                className={cn(buttonVariants({ variant: "ghost" }))}
+              >
+                Login
+              </Link>
+            ) : (
+              <UserAccountNav user={user} />
+            )}
           </div>
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

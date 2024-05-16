@@ -17,6 +17,7 @@ import {
   MessageSquare,
   Ghost,
   Trash,
+  XCircle,
   ChevronDown,
   ChevronUp,
   CheckIcon,
@@ -24,13 +25,14 @@ import {
   RotateCw,
   Dot,
   X,
-} from "lucide-react";
+} from "lucide-react"
 
 export const Icons = {
   User,
   Snail,
   Music2,
   Trash,
+  XCircle,
   RotateCw,
   Axe,
   File,
@@ -52,6 +54,6 @@ export const Icons = {
   Laptop,
   Ghost,
   X,
-};
+}
 
-export type Icon = keyof typeof Icons;
+export type Icon = keyof typeof Icons
