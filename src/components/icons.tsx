@@ -23,6 +23,7 @@ import {
   CheckIcon,
   ChevronRightIcon,
   RotateCw,
+  Send,
   Dot,
   X,
 } from "lucide-react"
@@ -31,6 +32,7 @@ export const Icons = {
   User,
   Snail,
   Music2,
+  Send,
   Trash,
   XCircle,
   RotateCw,

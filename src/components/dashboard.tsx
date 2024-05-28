@@ -92,17 +92,17 @@ const Dashboard: FC<DashboardProps> = ({}) => {
           <Skeleton
             count={1}
             width={340}
-            className="bg- min-h-[132px] w-full"
+            className="bg-background min-h-[132px] w-full"
           />
           <Skeleton
             count={1}
             width={340}
-            className="bg- min-h-[132px] w-full"
+            className="bg-background min-h-[132px] w-full"
           />
           <Skeleton
             count={1}
             width={340}
-            className="bg- min-h-[132px] w-full"
+            className="bg-background min-h-[132px] w-full"
           />
         </ul>
       ) : (
